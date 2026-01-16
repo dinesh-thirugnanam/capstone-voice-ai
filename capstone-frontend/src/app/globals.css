@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+.wave {
+  @apply w-1 h-3 bg-white rounded;
+  animation: wave 1s infinite ease-in-out;
+}
+
+@keyframes wave {
+  0% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1.2); }
+  100% { transform: scaleY(0.5); }
+}
+
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
