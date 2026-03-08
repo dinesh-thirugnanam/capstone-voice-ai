@@ -5,10 +5,10 @@ import MockTableData from "@/mocks/MockTableData";
 import { MockAiResponse, MockUserResponse } from "@/mocks/MockTextData";
 import ChatMessageComp from "@/components/ChatMessageComp";
 import mockAppointment from "@/mocks/MockAppointmentData";
-import ChatMessage from "@/types/ChatMessage";
-import TextMessage from "@/types/TextMessage";
 import ChatInput from "./ChatInput";
 import { sendMessage } from "../services/socket";
+import ChatMessage from "../../../shared/types/ChatMessage";
+import TextMessage from "../../../shared/types/TextMessage";
 
 const ChatWindow = () => {
     const [messageOrder, setMessageOrder] = useState<string[]>([

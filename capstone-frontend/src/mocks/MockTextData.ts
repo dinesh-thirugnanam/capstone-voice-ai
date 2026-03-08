@@ -1,4 +1,4 @@
-import TextMessage from "@/types/TextMessage";
+import TextMessage from "../../../shared/types/TextMessage";
 
 export const MockAiResponse: TextMessage = {
     id: "msg_01",

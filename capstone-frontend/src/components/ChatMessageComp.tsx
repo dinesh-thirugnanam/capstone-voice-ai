@@ -1,4 +1,4 @@
-import ChatMessage from "@/types/ChatMessage";
+import ChatMessage from "../../../shared/types/ChatMessage";
 import TableMessageComp from "./TableMessageComp";
 import TextMessageComp from "./TextMessageComp";
 import AppointmentMessageComp from "./AppointmentMessageComp";

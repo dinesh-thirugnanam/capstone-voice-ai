@@ -1,6 +1,6 @@
-import ChatMessage from "@/types/ChatMessage";
+import ChatMessage from "../../../shared/types/ChatMessage";
 import { ServerEvent } from "@/types/ServerEvents";
-import TableMessage from "@/types/TableMessage";
+import TableMessage from "../../../shared/types/TableMessage";
 
 export function handleServerEvent(
     event: ServerEvent,

@@ -1,4 +1,4 @@
-import TableMessage from "@/types/TableMessage";
+import TableMessage from "../../../shared/types/TableMessage";
 import React from "react";
 
 type TableMessageProps = {

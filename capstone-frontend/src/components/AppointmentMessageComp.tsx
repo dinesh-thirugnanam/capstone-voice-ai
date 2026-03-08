@@ -1,5 +1,5 @@
 import React from "react";
-import AppointmentMessage from "@/types/Appointmentessage";
+import AppointmentMessage from "../../../shared/types/Appointmentessage";
 
 type AppointmentMessageProps = {
     message: AppointmentMessage;

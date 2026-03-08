@@ -1,4 +1,4 @@
-import AppointmentMessage from "@/types/Appointmentessage";
+import AppointmentMessage from "../../../shared/types/Appointmentessage";
 
 const mockAppointment: AppointmentMessage = {
     id: "appt_001",

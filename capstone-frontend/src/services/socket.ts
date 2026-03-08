@@ -1,6 +1,6 @@
 // src/services/socket.ts
 
-import ChatMessage from "@/types/ChatMessage";
+import ChatMessage from "../../../shared/types/ChatMessage";
 
 let socket: WebSocket | null = null;
 

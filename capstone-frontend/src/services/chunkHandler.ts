@@ -1,4 +1,4 @@
-import ChatMessage from "@/types/ChatMessage";
+import ChatMessage from "../../../shared/types/ChatMessage";
 
 const handleMessageChunk = (chunk: ChatMessage) => {
     if (!messageOrder.includes(chunk.id)) {

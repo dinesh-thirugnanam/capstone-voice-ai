@@ -1,5 +1,5 @@
 "use client";
-import TextMessage from "@/types/TextMessage";
+import TextMessage from "../../../shared/types/TextMessage";
 import gsap from "gsap";
 import React, { useEffect, useRef, useState } from "react";
 import { lenisRef } from "./SmoothScroll";
