@@ -1,38 +1,116 @@
+@import url("https://fonts.googleapis.com/css2?family=Poiret+One&display=swap");
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #dbe0dd;
+    --foreground: #171717;
 }
 
 .wave {
-  @apply w-1 h-3 bg-white rounded;
-  animation: wave 1s infinite ease-in-out;
+    @apply w-1 h-3 bg-white rounded;
+    animation: wave 1s infinite ease-in-out;
 }
 
 @keyframes wave {
-  0% { transform: scaleY(0.5); }
-  50% { transform: scaleY(1.2); }
-  100% { transform: scaleY(0.5); }
+    0% {
+        transform: scaleY(0.5);
+    }
+    50% {
+        transform: scaleY(1.2);
+    }
+    100% {
+        transform: scaleY(0.5);
+    }
 }
 
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+    --font-poiret: var(--font-poiret-one);
+    --animate-background: .animate-background;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+    }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #3278bf45;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #dbe0dd;
+}
+
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto;
+}
+
+.animate-background {
+    background: hsla(144, 7%, 87%, 1);
+
+    background: radial-gradient(
+        circle,
+        hsla(144, 7%, 87%, 1) 34%,
+        hsla(209, 22%, 75%, 1) 60%
+    );
+
+    background: -moz-radial-gradient(
+        circle,
+        hsla(144, 7%, 87%, 1) 34%,
+        hsla(209, 22%, 75%, 1) 60%
+    );
+
+    background: -webkit-radial-gradient(
+        circle,
+        hsla(144, 7%, 87%, 1) 34%,
+        hsla(209, 22%, 75%, 1) 60%
+    );
+
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#DBE0DD", endColorstr="#B3C1CE", GradientType=1 );
+    background-size: 400% 400%;
+    animation: bg-rotate infinite 30s ease-in-out;
+}
+
+@keyframes bg-rotate {
+    0% {
+        background-position: 0 0;
+    }
+    20% {
+        background-position: 0 100%;
+    }
+    40% {
+        background-position: 100% 100%;
+    }
+    60% {
+        background-position: 50% 100%;
+    }
+    80% {
+        background-position: 50% 50%;
+    }
+    100% {
+        background-position: 0 0;
+    }
 }
