@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SmoothScroll from "./SmoothScroll";
 import MockTableData from "@/mocks/MockTableData";
 import { MockAiResponse, MockUserResponse } from "@/mocks/MockTextData";
@@ -8,6 +8,7 @@ import mockAppointment from "@/mocks/MockAppointmentData";
 import ChatMessage from "@/types/ChatMessage";
 import TextMessage from "@/types/TextMessage";
 import ChatInput from "./ChatInput";
+import { sendMessage } from "../services/socket";
 
 const ChatWindow = () => {
     const [messageOrder, setMessageOrder] = useState<string[]>([
@@ -50,6 +51,12 @@ const ChatWindow = () => {
         });
     };
 
+    useEffect(() => {
+        import("../services/socket").then(({ connectSocket }) => {
+            connectSocket(handleMessageChunk); // pass your existing function
+        });
+    }, []);
+
     const scrollRef = useRef<HTMLDivElement>(null);
     return (
         <div className="z-0 relative w-[80vw] sm:w-[60vw] md:w-[30vw] min-h-[70vh] max-h-[90vh] h-fit animate-background rounded-xl overflow-hidden">
@@ -70,7 +77,7 @@ const ChatWindow = () => {
                 {messageOrder.map((msgKey) => (
                     <ChatMessageComp message={messages[msgKey]} key={msgKey} />
                 ))}
-                <ChatInput onSend={() => console.log("Msg Sent")} />
+                <ChatInput onSend={sendMessage} />
             </div>
         </div>
     );
