@@ -1,0 +1,123 @@
+===== capstone-backend\src =====
+
+
+===== capstone-backend\src\config =====
+
+
+===== capstone-backend\src\controllers =====
+
+
+===== capstone-backend\src\controllers\AppointmentsController.ts =====
+
+
+===== capstone-backend\src\controllers\AuthController.ts =====
+
+
+===== capstone-backend\src\controllers\EventsController.ts =====
+
+
+===== capstone-backend\src\controllers\MockController.ts =====
+
+
+===== capstone-backend\src\controllers\SessionController.ts =====
+
+
+===== capstone-backend\src\controllers\SlotsController.ts =====
+
+
+===== capstone-backend\src\controllers\UsersController.ts =====
+
+
+===== capstone-backend\src\core =====
+
+
+===== capstone-backend\src\dal =====
+
+
+===== capstone-backend\src\dal\AppointmentDal.ts =====
+
+
+===== capstone-backend\src\dal\EventDal.ts =====
+
+
+===== capstone-backend\src\dal\SlotDal.ts =====
+
+
+===== capstone-backend\src\dal\UserDal.ts =====
+
+
+===== capstone-backend\src\lib =====
+
+
+===== capstone-backend\src\lib\supabase.ts =====
+
+
+===== capstone-backend\src\llm =====
+
+
+===== capstone-backend\src\middleware =====
+
+
+===== capstone-backend\src\routes =====
+
+
+===== capstone-backend\src\routes\appointments.ts =====
+
+
+===== capstone-backend\src\routes\auth.ts =====
+
+
+===== capstone-backend\src\routes\events.ts =====
+
+
+===== capstone-backend\src\routes\mock.ts =====
+
+
+===== capstone-backend\src\routes\session.ts =====
+
+
+===== capstone-backend\src\routes\slots.ts =====
+
+
+===== capstone-backend\src\routes\users.ts =====
+
+
+===== capstone-backend\src\services =====
+
+
+===== capstone-backend\src\services\AppointmentService.ts =====
+
+
+===== capstone-backend\src\services\AuthService.ts =====
+
+
+===== capstone-backend\src\services\EventService.ts =====
+
+
+===== capstone-backend\src\services\MockService.ts =====
+
+
+===== capstone-backend\src\services\SessionService.ts =====
+
+
+===== capstone-backend\src\services\SlotService.ts =====
+
+
+===== capstone-backend\src\services\UserService.ts =====
+
+
+===== capstone-backend\src\types =====
+
+
+===== capstone-backend\src\types\supabase.ts =====
+
+
+===== capstone-backend\src\utils =====
+
+
+===== capstone-backend\src\ws =====
+
+
+===== capstone-backend\src\server.ts =====
+
+

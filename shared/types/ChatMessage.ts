@@ -1,10 +1,7 @@
-import AppointmentMessage from "./Appointmentessage";
-import TableMessage from "./TableMessage";
-import TextMessage from "./TextMessage";
+import AppointmentMessage from "./Appointmentessage.ts";
+import TableMessage from "./TableMessage.ts";
+import TextMessage from "./TextMessage.ts";
 
-type ChatMessage =
-    | TextMessage
-    | TableMessage
-    | AppointmentMessage;
+type ChatMessage = TextMessage | TableMessage | AppointmentMessage;
 
 export default ChatMessage;

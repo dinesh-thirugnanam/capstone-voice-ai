@@ -1,0 +1,29 @@
+{
+  "name": "capstone-backend",
+  "version": "1.0.0",
+  "description": "Voice AI backend",
+  "license": "ISC",
+  "author": "Dinesh T",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
+    "supabase": "^2.84.10",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.2",
+    "tsx": "^4.0.0",
+    "typescript": "^6.0.2"
+  }
+}
