@@ -3,90 +3,126 @@ import { ChatService } from "../chat/ChatService.ts";
 import { getLLM } from "../llm/LLMFactory.ts";
 import { v4 as uuid } from "uuid";
 
-export function initChatSocket(server: any) {
-    const wss = new WebSocketServer({ server });
-
+export function initChatSocket(wss: WebSocketServer) {
     const chatService = new ChatService();
     const llm = getLLM();
 
     wss.on("connection", (ws) => {
+        const sessionId = (ws as any).sessionId;
+        console.log("WS session: ", sessionId);
         ws.on("message", async (data) => {
             try {
-                const { sessionId, message } = JSON.parse(data.toString());
+                // const { sessionId, message } = JSON.parse(data.toString());
 
-                const result = await chatService.handleMessage(
-                    sessionId,
-                    message,
-                );
+                const msg = JSON.parse(data.toString());
 
-                // ───────────── STREAMING RESPONSE ─────────────
+                if (msg.event === "user.message") {
+                    const result = await chatService.handleMessage(
+                        sessionId,
+                        msg.content,
+                    );
 
-                const id = uuid();
+                    console.log(`[WS] Result type: ${result.type}`);
+                    console.log(
+                        `[WS] Full result:`,
+                        JSON.stringify(result, null, 2),
+                    );
 
-                send(ws, {
-                    event: "message.start",
-                    id,
-                });
+                    // ===== NON-STREAMING RESPONSES (immediate, no start/end events) =====
 
-                // 1. LLM STREAM
-                if (result.type === "stream") {
-                    for await (const chunk of llm.generate(result.prompt)) {
+                    // 1. QUESTION
+                    if (result.type === "question") {
+                        console.log(
+                            `[WS-QUESTION] 📤 Sending question with content="${result.content}" (result.text="${result.text}")`,
+                        );
+                        send(ws, {
+                            event: "message.question",
+                            id: uuid(),
+                            content: result.content,
+                            text: result.text,
+                        });
+                        return;
+                    }
+
+                    // 2. APPOINTMENTS
+                    if (result.type === "appointments") {
+                        // console.log(`[WS] 🔴 Sending APPOINTMENTS:`, result);
+                        send(ws, {
+                            event: "message.appointments",
+                            id: result.id || uuid(),
+                            ...result,
+                        });
+                        return;
+                    }
+
+                    // 3. TABLE
+                    if (result.type === "table") {
+                        // console.log(`[WS] 🔴 Sending TABLE:`, result);
+                        send(ws, {
+                            event: "message.table",
+                            id: result.id || uuid(),
+                            ...result,
+                        });
+                        return;
+                    }
+
+                    // 4. CRISIS
+                    if (result.type === "crisis") {
+                        send(ws, {
+                            event: "message.chunk",
+                            id: uuid(),
+                            content: result.content,
+                        });
+                        return;
+                    }
+
+                    // 5. RESULT
+                    if (result.type === "result") {
+                        send(ws, {
+                            event: "message.chunk",
+                            id: uuid(),
+                            content: formatResult(result.data),
+                        });
+                        return;
+                    }
+
+                    // ===== STREAMING RESPONSES (with start/end events) =====
+
+                    const id = uuid();
+
+                    send(ws, {
+                        event: "message.start",
+                        id,
+                    });
+
+                    // 1. LLM STREAM
+                    if (result.type === "stream") {
+                        for await (const chunk of llm.generate(result.prompt)) {
+                            send(ws, {
+                                event: "message.chunk",
+                                id,
+                                content: chunk,
+                            });
+                        }
+                    }
+
+                    // 2. TEXT RESPONSE
+                    else if (result.type === "text") {
                         send(ws, {
                             event: "message.chunk",
                             id,
-                            content: chunk,
+                            content: result.content,
                         });
                     }
-                }
 
-                // 2. TEXT RESPONSE
-                else if (result.type === "text") {
                     send(ws, {
-                        event: "message.chunk",
+                        event: "message.end",
                         id,
-                        content: result.content,
                     });
                 }
-
-                // 3. QUESTION
-                else if (result.type === "question") {
-                    send(ws, {
-                        event: "message.chunk",
-                        id,
-                        content: result.text,
-                    });
-
-                    // 👉 send options as metadata (frontend handles buttons)
-                    send(ws, {
-                        event: "message.chunk",
-                        id,
-                        content: "\n\n[0,1,2,3]",
-                    });
-                }
-
-                // 4. CRISIS
-                else if (result.type === "crisis") {
-                    send(ws, {
-                        event: "message.chunk",
-                        id,
-                        content: result.content,
-                    });
-                }
-
-                // 5. RESULT
-                else if (result.type === "result") {
-                    send(ws, {
-                        event: "message.chunk",
-                        id,
-                        content: formatResult(result.data),
-                    });
-                }
-
-                send(ws, {
-                    event: "message.end",
-                    id,
-                });
             } catch (err) {
+                console.error("CHAT ERROR:", err);
+
                 send(ws, {
                     event: "error",
                     message: "Something went wrong",

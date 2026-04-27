@@ -104,32 +104,25 @@ const BOOKING_KEYWORDS = [
 ];
 
 const YES_PATTERNS = [
-    "^yes",
-    "^yeah",
-    "^yep",
-    "^sure",
-    "^okay",
-    "^ok",
-    "^alright",
-    "^fine",
-    "^i will",
-    "^i'd like",
-    "^i would",
-    "^sounds good",
-    "^go ahead",
+    "\\b(yes|yeah|yea|yep|sure|okay|ok|alright|fine)\\b",
+    "i will",
+    "i'd like",
+    "i would",
+    "sounds good",
+    "go ahead",
 ];
 
 const NO_PATTERNS = [
-    "^no\\b",
-    "^nope",
-    "^nah",
-    "^not now",
-    "^not really",
-    "^i don't",
-    "^i dont",
-    "^no thanks",
-    "^maybe later",
-    "^skip",
+    "\\bno\\b",
+    "\\bnope\\b",
+    "\\bnah\\b",
+    "not now",
+    "not really",
+    "i don't",
+    "i dont",
+    "no thanks",
+    "maybe later",
+    "\\bskip\\b",
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

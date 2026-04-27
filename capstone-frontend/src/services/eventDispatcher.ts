@@ -1,31 +1,36 @@
-import ChatMessage from "../../../shared/types/ChatMessage";
-import { ServerEvent } from "@/types/ServerEvents";
-import TableMessage from "../../../shared/types/TableMessage";
-
-export function handleServerEvent(
-    event: ServerEvent,
-    handleChunk: (chunk: ChatMessage) => void,
-) {
+export function dispatchEvent(event: any) {
     switch (event.event) {
-        case "message.chunk":
-            handleChunk({
-                id: event.id,
-                type: "text",
-                status: "streaming",
-                content: event.content,
-            });
+        case "message.start":
+            handleStart(event);
             break;
 
-        case "table.data":
-            // Convert TableData into TableMessage
-            const tableMsg: TableMessage = {
-                id: event.id,
-                role: "assistant",
-                type: "table",
-                columns: event.rows[0] || [],
-                rows: event.rows.slice(1).map((row: string) => [row]),
-            };
-            handleChunk(tableMsg);
+        case "message.chunk":
+            handleChunk(event);
             break;
+
+        case "message.end":
+            handleEnd(event);
+            break;
+
+        case "message.question":
+            handleQuestion(event);
+            break;
+
+        case "error":
+            console.error("WS Error:", event.message);
+            break;
+
+        default:
+            console.warn("Unknown event:", event);
     }
+}
+
+function handleStart(event: any) {
+    addMessage({
+        id: event.id,
+        role: "assistant",
+        type: "text",
+        status: "loading",
+        content: "",
+    });
 }

@@ -13,6 +13,7 @@ import http from "http";
 import cors from "cors";
 import { ChatController } from "./chat/ChatController.ts";
 import { initChatSocket } from "./ws/chatSocket.ts";
+import { WebSocketServer } from "ws";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -34,10 +35,30 @@ app.post("/chat", chatController.handle);
 
 const server = http.createServer(app);
 
-initChatSocket(server);
+const wss = new WebSocketServer({ noServer: true });
+
+initChatSocket(wss);
 
 server.listen(port, () => {
     console.log(`Listening on Port ${port}`);
     console.log(`GoTo : http://localhost:${port}`);
     console.log(`WS + HTTP running on ${port}`);
+});
+
+server.on("upgrade", (req, socket, head) => {
+    const url = req.url || "";
+
+    const match = url.match(/^\/ws\/chat\/(.+)$/);
+
+    if (!match) {
+        socket.destroy();
+        return;
+    }
+
+    const sessionId = match[1];
+
+    wss.handleUpgrade(req, socket, head, (ws) => {
+        (ws as any).sessionId = sessionId;
+        wss.emit("connection", ws, req);
+    });
 });

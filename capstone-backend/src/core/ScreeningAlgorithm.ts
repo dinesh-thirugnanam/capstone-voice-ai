@@ -311,6 +311,26 @@ const RECOMMENDATIONS: Record<IndicationLevel, string> = {
  * This is the output of the entire algorithm.
  */
 export function generateResult(state: ScreeningState): ScreeningResult {
+    // 🚨 CRITICAL OVERRIDE: If the suicide flag was tripped at any point,
+    // immediately escalate to SEVERE regardless of math score
+    if (state.suicideFlag) {
+        const severeWarning =
+            "Your responses suggest significant distress. It's strongly recommended that you speak with a mental health professional as soon as possible. If you are in crisis, please contact emergency services or a crisis hotline immediately.";
+
+        return {
+            indicationLevel: "SEVERE" as IndicationLevel,
+            suicide_flag: true,
+            suicideFlag: true,
+            normalized_score: 27,
+            normalizedScore: 27,
+            recommendation: severeWarning,
+            advice: severeWarning,
+            text: severeWarning,
+            message: severeWarning,
+            primaryDomain: state.primaryDomain,
+        };
+    }
+
     const normalizedScore = normaliseScore(state);
     const indicationLevel = classifyScore(normalizedScore);
 

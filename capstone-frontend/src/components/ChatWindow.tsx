@@ -27,26 +27,47 @@ const ChatWindow = () => {
 
     const [messageOrder, setMessageOrder] = useState<string[]>(initialOrder);
 
+    useEffect(() => {
+        setMessageOrder((order) => order.filter((id) => !!id));
+    }, []);
     const handleMessageChunk = (chunk: ChatMessage) => {
+        // console.log(`[ChatWindow] Received chunk:`, chunk);
+        // console.log(`[ChatWindow] Chunk type: ${chunk.type}`);
+        if (!chunk || !chunk.id) {
+            console.warn("Dropped invalid message:", chunk);
+            return;
+        }
         setMessages((prev) => {
             const existing = prev[chunk.id];
 
             if (!existing) {
-                setMessageOrder((order) =>
-                    order.includes(chunk.id) ? order : [...order, chunk.id],
-                );
+                // console.log(`[ChatWindow] New message, adding to order and state`);
+                setMessageOrder((order) => {
+                    if (!chunk.id) return order;
+                    if (order.includes(chunk.id)) return order;
+                    return [...order, chunk.id];
+                });
 
-                return {
-                    ...prev,
-                    [chunk.id]: {
-                        ...chunk,
-                        content:
-                            chunk.type === "text" ? (chunk.content ?? "") : "",
-                    },
-                };
+                // For text messages, ensure content is initialized. For other types, preserve the chunk as-is.
+                if (chunk.type === "text") {
+                    return {
+                        ...prev,
+                        [chunk.id]: {
+                            ...chunk,
+                            content: chunk.content ?? "",
+                        },
+                    };
+                } else {
+                    // Preserve non-text chunks exactly as they come
+                    return {
+                        ...prev,
+                        [chunk.id]: chunk,
+                    };
+                }
             }
 
             if (chunk.type !== "text") {
+                // console.log(`[ChatWindow] Non-text message (${chunk.type}), preserving as-is`);
                 return { ...prev, [chunk.id]: chunk };
             }
 
@@ -91,6 +112,7 @@ const ChatWindow = () => {
                 method: "POST",
             });
 
+            console.log(res);
             const data = await res.json();
 
             const sessionId = data.sessionId;
@@ -103,7 +125,14 @@ const ChatWindow = () => {
         startSession();
     }, []);
 
-    const scrollRef = useRef<HTMLDivElement>(null);
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+
+    const lastMsgId = messageOrder[messageOrder.length - 1];
+    const lastMsg = messages[lastMsgId];
+    const isAssistantReplying =
+        lastMsg?.role === "assistant" &&
+        (lastMsg?.status === "loading" || lastMsg?.status === "streaming");
+
     return (
         <div className="z-0 relative w-[80vw] sm:w-[60vw] md:w-[30vw] min-h-[70vh] max-h-[90vh] h-fit animate-background rounded-xl overflow-hidden">
             <div
@@ -118,15 +147,41 @@ const ChatWindow = () => {
                     Assistant
                 </h1>
 
-                <SmoothScroll containerRef={scrollRef} />
+                {/* <SmoothScroll containerRef={scrollRef} /> */}
 
-                {messageOrder.map((msgKey) => {
+                {messageOrder.map((msgKey, i) => {
+                    // console.log("KEY:", msgKey, "INDEX:", i);
+
                     const msg = messages[msgKey];
-                    console.log(msg + " : " + msgKey);
+
                     if (!msg) return null;
+
                     return <ChatMessageComp message={msg} key={msgKey} />;
                 })}
-                <ChatInput onSend={sendMessage} />
+                <ChatInput
+                    isAssistantReplying={isAssistantReplying}
+                    onSend={(message) => {
+                        const id = crypto.randomUUID();
+                        console.log("RENDERING:", message);
+
+                        // 1. Add user message locally
+                        setMessages((prev) => ({
+                            ...prev,
+                            [id]: {
+                                id: id,
+                                role: "user",
+                                type: "text",
+                                status: "done",
+                                content: message,
+                            },
+                        }));
+
+                        setMessageOrder((prev) => [...prev, id]);
+
+                        // 2. Send to backend
+                        sendMessage(message);
+                    }}
+                />
             </div>
         </div>
     );

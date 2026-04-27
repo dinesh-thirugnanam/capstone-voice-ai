@@ -6,11 +6,13 @@ import React, { useState, useRef, useEffect } from "react";
 
 type Props = {
     onSend: (message: string) => void;
+    isAssistantReplying?: boolean;
 };
 
-export default function ChatInput({ onSend }: Props) {
+export default function ChatInput({ onSend, isAssistantReplying }: Props) {
     const [input, setInput] = useState("");
     const [isRecording, setIsRecording] = useState(false);
+    const [isContinuousVoice, setIsContinuousVoice] = useState(false);
     const recognitionRef = useRef<any>(null);
 
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -40,6 +42,17 @@ export default function ChatInput({ onSend }: Props) {
 
         onSend(input);
         setInput("");
+        setIsContinuousVoice(false);
+    };
+
+    const toggleListening = () => {
+        if (isRecording) {
+            setIsContinuousVoice(false);
+            recognitionRef.current?.stop();
+        } else {
+            setIsContinuousVoice(true);
+            startListening();
+        }
     };
 
     const startListening = () => {
@@ -60,14 +73,8 @@ export default function ChatInput({ onSend }: Props) {
         recognition.continuous = false;
         recognition.interimResults = false;
 
-        recognition.onstart = () => {
-            setIsRecording(true);
-        };
-
-        recognition.onend = () => {
-            setIsRecording(false);
-        };
-
+        recognition.onstart = () => setIsRecording(true);
+        recognition.onend = () => setIsRecording(false);
         recognition.onresult = (event: any) => {
             const transcript = event.results[0][0].transcript;
             setInput(transcript);
@@ -77,6 +84,15 @@ export default function ChatInput({ onSend }: Props) {
         recognitionRef.current = recognition;
         recognition.start();
     };
+
+    useEffect(() => {
+        if (!isAssistantReplying && isContinuousVoice && !isRecording) {
+            const timer = setTimeout(() => {
+                startListening();
+            }, 600);
+            return () => clearTimeout(timer);
+        }
+    }, [isAssistantReplying, isContinuousVoice, isRecording]);
 
     return (
         <div className="sticky bottom-2 flex gap-2 py-2 px-4 w-11/12 h-fit justify-around font-poiret bg-[#dbe0dd]/90 backdrop-blur-3xl text-black rounded-2xl z-10 drop-shadow-lg outline outline-white/30">
@@ -94,14 +110,15 @@ export default function ChatInput({ onSend }: Props) {
                     placeholder="Type or speak..."
                 />
 
-                {/* Mic Button */}
                 <button
                     type="button"
-                    onClick={startListening}
-                    className={`px-4 py-2 rounded-lg ${
+                    onClick={toggleListening}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
                         isRecording
                             ? "bg-red-500 text-white animate-pulse"
-                            : "bg-gray-300"
+                            : isContinuousVoice
+                              ? "bg-blue-400 text-white"
+                              : "bg-gray-300"
                     }`}
                 >
                     <MicIcon />

@@ -11,4 +11,6 @@ export class SlotService {
     deleteSlot = async (id: string) => await this.dal.deleteSlot(id);
 
     getSlotsByUser = async (id: string) => await this.dal.getSlotsByUser(id);
+
+    getAvailableSlots = async () => await this.dal.getAvailableSlots();
 }

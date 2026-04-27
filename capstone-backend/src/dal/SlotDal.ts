@@ -41,4 +41,14 @@ export class SlotDAL {
         if (error) throw error;
         return data;
     };
+
+    getAvailableSlots = async () => {
+        const { data, error } = await this.db
+            .from("availability_slot")
+            .select("*, users(name)")
+            .eq("is_booked", false)
+            .order("start_time");
+        if (error) throw error;
+        return data;
+    };
 }

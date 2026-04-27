@@ -7,9 +7,15 @@ export class ChatController {
     private llm = getLLM();
 
     handle = async (req: any, res: any) => {
-        const { sessionId, message } = req.body;
+        // Extract history, default to empty array if missing
+        const { sessionId, userMessage, history = [] } = req.body;
 
-        const result = await this.service.handleMessage(sessionId, message);
+        // Pass history to the service
+        const result = await this.service.handleMessage(
+            sessionId,
+            userMessage,
+            history,
+        );
 
         // stream case
         if (result.type === "stream") {

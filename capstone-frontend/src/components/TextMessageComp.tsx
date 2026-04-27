@@ -1,72 +1,88 @@
 "use client";
-import TextMessage from "../../../shared/types/TextMessage";
-import gsap from "gsap";
+
 import React, { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import TextMessage from "../../../shared/types/TextMessage";
 import { lenisRef } from "./SmoothScroll";
 
 type TextMessageProp = {
-    message: TextMessage;
+    message?: TextMessage; // message may be undefined
 };
 
 const TextMessageComp = ({ message }: TextMessageProp) => {
     const textRef = useRef<HTMLParagraphElement>(null);
-    const revealedLength = useRef(0);
     const [visibleText, setVisibleText] = useState("");
 
+    const revealIndexRef = useRef(0);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    const fullText = message?.content ?? ""; // safe fallback
+
     useEffect(() => {
-        if (!textRef.current) {
-            return;
+        // Clear previous interval
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
         }
 
-        const fullText = message.content;
+        setVisibleText(""); // reset visible text
+        revealIndexRef.current = 0;
 
-        if (revealedLength.current >= fullText.length) return;
+        if (!fullText) return; // no text to reveal
 
-        const newString = message.content.slice(revealedLength.current);
-
-        let index = 0;
-
-        const interval = setInterval(() => {
-            index++;
-            setVisibleText((prev) => prev + newString[index - 1]);
-
-            if (index >= newString.length) {
-                clearInterval(interval);
+        intervalRef.current = setInterval(() => {
+            if (revealIndexRef.current < fullText.length) {
+                const nextChar = fullText[revealIndexRef.current];
+                setVisibleText((prev) => prev + nextChar);
+                revealIndexRef.current += 1;
+            } else {
+                if (intervalRef.current) {
+                    clearInterval(intervalRef.current);
+                    intervalRef.current = null;
+                }
             }
+
+            lenisRef.current?.resize();
         }, 15);
 
-        revealedLength.current = fullText.length;
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
+        };
+    }, [fullText]);
 
-        lenisRef.current?.resize();
-
-        return () => clearInterval(interval);
-    }, [message.content]);
-
+    // GSAP fade-in
     useEffect(() => {
-        gsap.fromTo(
-            textRef.current,
-            { opacity: 0.7 },
-            { opacity: 1, duration: 0.3 },
-        );
+        if (textRef.current) {
+            gsap.fromTo(
+                textRef.current,
+                { opacity: 0.7 },
+                { opacity: 1, duration: 0.3 },
+            );
+        }
     }, [visibleText]);
 
-    const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    // Lenis resize after rendering
     useEffect(() => {
-        clearTimeout(resizeTimeoutRef.current!);
-        resizeTimeoutRef.current = setTimeout(() => {
+        const timeout = setTimeout(() => {
             lenisRef.current?.resize();
         }, 50);
+        return () => clearTimeout(timeout);
     }, [visibleText]);
 
+    // Instead of returning null, render empty placeholder so layout stays
     return (
-        <>
-            <p ref={textRef}>
-                {visibleText}
-                {message.status === "streaming" && (
-                    <span className="animate-ping">&#124;</span>
-                )}
-            </p>
-        </>
+        <p
+            ref={textRef}
+            className="break-words whitespace-pre-wrap min-h-[1em]"
+        >
+            {visibleText}
+            {message?.status === "streaming" && (
+                <span className="animate-ping">&#124;</span>
+            )}
+        </p>
     );
 };
 
